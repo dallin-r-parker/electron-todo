@@ -22,6 +22,7 @@ const menuTemplate = [
             {label: 'New Todo'},
             {
                 label: 'Quit',
+                accelerator: 'Command+Q',
                 click() {
                     app.quit()
                 }
