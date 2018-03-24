@@ -24,7 +24,7 @@ const menuTemplate = [
             {
                 label: 'Quit',
                 // accelerator: 'Command+Q', <== this only works for OS X
-                accelerator: (() => (platform === 'darwin') ? 'Command+Q' : 'Ctrl+Q')(),
+                accelerator: platform === 'darwin' ? 'Command+Q' : 'Ctrl+Q',
                 click() {
                     app.quit()
                 }
