@@ -1,14 +1,17 @@
 const electron = require('electron')
 
-const {app, BrowserWindow, Menu} = electron
+const {app, BrowserWindow, Menu, ipcMain} = electron
 
 let mainWindow
 let addWindow
 const {platform} = process
 
+
+
 app.on('ready', () => {
     mainWindow = new BrowserWindow({})
     mainWindow.loadURL(`file://${__dirname}/index.html`)
+    mainWindow.on('closed', () => app.quit())
 
     const mainMenu = Menu.buildFromTemplate(menuTemplate)
     Menu.setApplicationMenu(mainMenu)
@@ -21,7 +24,15 @@ function createAddWindow() {
         title: 'Add New Todo'
     })
     addWindow.loadURL(`file://${__dirname}/add.html `)
+    // The reason for this event listener is for garbage collection
+    // to occur on a window that is ending.
+    addWindow.on('closed', () => addWindow = null)
 }
+
+ipcMain.on('form:todo', (evt, todo) => {
+    mainWindow.webContents.send('add:todo', todo)
+    addWindow.close()
+})
 
 const menuTemplate = [
     //the first object comes from the name of the project, so giving it an empty obj
@@ -51,4 +62,20 @@ const menuTemplate = [
 if(platform === 'darwin') {
     // adding empty obj at the start because we're on an OSX machine
     menuTemplate.unshift({})
+}
+
+if (process.env.NODE_ENV !== 'production') {
+    menuTemplate.push({
+        label: 'View',
+        submenu: [
+            {role: 'reload'},
+            {
+                label: 'Toggle DevTools',
+                accelerator: platform === 'darwin' ? 'Command+Alt+I' : 'Ctrl+Alt+I',
+                click(item, focusedWindow) {
+                    focusedWindow.toggleDevTools()
+                }
+            }
+        ]
+    })
 }

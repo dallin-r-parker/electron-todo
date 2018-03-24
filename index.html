@@ -10,6 +10,31 @@
 
 <body>
     <h1>Welcome!</h1>
+    <ul></ul>
+    <br>
+    <button>clear all todo's</button>
+
+
+    <script>
+        const electron = require('electron')
+
+        const { ipcRenderer } = electron
+
+        ipcRenderer.on('add:todo', (evt, todo) => {
+            const li = document.createElement('li')
+            const text = document.createTextNode(todo)
+            li.appendChild(text)
+            document.querySelector('ul').appendChild(li)
+        })
+
+        document.querySelector('button')
+            .addEventListener('click', evt => {
+                evt.preventDefault()
+
+                document.querySelector('ul').innerText = ''
+            })
+    </script>
+
 </body>
 
 </html>
