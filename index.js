@@ -3,6 +3,7 @@ const electron = require('electron')
 const {app, BrowserWindow, Menu} = electron
 
 let mainWindow
+const {platform} = process
 
 app.on('ready', () => {
     mainWindow = new BrowserWindow({})
@@ -22,7 +23,8 @@ const menuTemplate = [
             {label: 'New Todo'},
             {
                 label: 'Quit',
-                accelerator: 'Command+Q',
+                // accelerator: 'Command+Q', <== this only works for OS X
+                accelerator: (() => (platform === 'darwin') ? 'Command+Q' : 'Ctrl+Q')(),
                 click() {
                     app.quit()
                 }
@@ -31,7 +33,7 @@ const menuTemplate = [
     }
 ]
 
-if(process.platform === 'darwin') {
+if(platform === 'darwin') {
     // adding empty obj at the start because we're on an OSX machine
     menuTemplate.unshift({})
 }
